@@ -6,16 +6,9 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+TYPE gui_TYPE
+	test
 
-main()
+ENDTYPE
 
-FUNCTION main:
-
-	WHILE TRUE
-		
-
-		SHOWSCREEN
-	WEND
-
-ENDFUNCTION
-
+GLOBAL gui AS gui_TYPE
