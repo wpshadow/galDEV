@@ -29,17 +29,47 @@ FUNCTION SYS_initial:
 
 	AUTOPAUSE FALSE
 	SYSTEMPOINTER TRUE
+	
+	SYS_checkDocumentDir()
 
 ENDFUNCTION
 
 FUNCTION SYS_addLog:
 
-	
+
 
 ENDFUNCTION
 
 FUNCTION SYS_addConsole:
 
 	
+
+ENDFUNCTION
+
+FUNCTION SYS_checkDocumentDir:
+LOCAL ok
+
+	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ")
+	
+		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ")
+	
+	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/log")
+	
+		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/log")
+
+	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/save")
+	
+		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/save")
+
+
+ENDFUNCTION
+
+FUNCTION SYS_createDir: directory$
+LOCAL ok
+
+	ok = CREATEDIR(directory$)
+	
+	IF ok = TRUE THEN RETURN
+	IF ok = FALSE THEN END
 
 ENDFUNCTION
