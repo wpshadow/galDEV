@@ -6,20 +6,14 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+FUNCTION system:
 
-main()
-
-FUNCTION main:
-
-	system()
-
-	WHILE TRUE
-	
-		guiUpdate()
-
-
-		SHOWSCREEN
-	WEND
 
 ENDFUNCTION
 
+FUNCTION SYS_initial:
+
+	AUTOPAUSE FALSE
+	SYSTEMPOINTER TRUE
+
+ENDFUNCTION
