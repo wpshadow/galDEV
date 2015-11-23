@@ -14,7 +14,7 @@ FUNCTION main:
 	system()
 
 	WHILE TRUE
-	
+
 		guiUpdate()
 
 

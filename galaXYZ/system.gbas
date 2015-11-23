@@ -6,8 +6,22 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
-FUNCTION system:
+TYPE logging
 
+ENDTYPE
+
+TYPE console_TYPE
+
+ENDTYPE
+
+TYPE system_TYPE
+
+ENDTYPE
+
+GLOBAL sys AS system_TYPE
+
+FUNCTION system:
+	SYS_initial()
 
 ENDFUNCTION
 
@@ -15,5 +29,17 @@ FUNCTION SYS_initial:
 
 	AUTOPAUSE FALSE
 	SYSTEMPOINTER TRUE
+
+ENDFUNCTION
+
+FUNCTION SYS_addLog:
+
+	
+
+ENDFUNCTION
+
+FUNCTION SYS_addConsole:
+
+	
 
 ENDFUNCTION

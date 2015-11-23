@@ -18,7 +18,7 @@ TYPE mouse_TYPE
 	b1
 	b2
 	b1_press
-	b2_press	
+	b2_press
 ENDTYPE
 
 TYPE gui_TYPE
@@ -35,7 +35,7 @@ GLOBAL gui AS gui_TYPE
 FUNCTION guiUpdate:
 
 	GUI_updateMouse()
-	
+
 	GUI_drawMouse()
 
 ENDFUNCTION
@@ -49,7 +49,7 @@ STATIC b1_tmp, b2_tmp, press_init, press_timer_old
 
 		gui.mouse.x = x
 		gui.mouse.y = y
-			
+
 	IF b1_press = FALSE
 		b1 = FALSE
 		press_init = FALSE
@@ -86,7 +86,7 @@ ENDFUNCTION
 
 FUNCTION GUI_loader:
 
-	
+
 
 ENDFUNCTION
 
