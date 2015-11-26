@@ -11,8 +11,12 @@ main()
 
 FUNCTION main:
 
+	system()
+
 	WHILE TRUE
-		
+
+		guiUpdate()
+
 
 		SHOWSCREEN
 	WEND

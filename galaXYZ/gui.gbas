@@ -6,9 +6,87 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
-TYPE gui_TYPE
-	test
+TYPE gfx_TYPE
+	id
+	sizeX
+	sizeY
+ENDTYPE
 
+TYPE mouse_TYPE
+	x
+	y
+	b1
+	b2
+	b1_press
+	b2_press
+ENDTYPE
+
+TYPE gui_TYPE
+	mouse AS mouse_TYPE
 ENDTYPE
 
 GLOBAL gui AS gui_TYPE
+
+
+// --------------------------------- //
+
+
+
+FUNCTION guiUpdate:
+
+	GUI_updateMouse()
+
+	GUI_drawMouse()
+
+ENDFUNCTION
+
+
+FUNCTION GUI_updateMouse:
+LOCAL x, y, b1, b2, b1_press, b2_press
+STATIC b1_tmp, b2_tmp, press_init, press_timer_old
+
+	MOUSESTATE x, y, b1_press, b2_press
+
+		gui.mouse.x = x
+		gui.mouse.y = y
+
+	IF b1_press = FALSE
+		b1 = FALSE
+		press_init = FALSE
+	ENDIF
+	IF b1_press = TRUE
+		b1_tmp = TRUE
+		IF press_init = FALSE
+			press_timer_old = GETTIMERALL() + 500
+			press_init = TRUE
+		ENDIF
+	ENDIF
+	IF b1_press = FALSE AND b1_tmp = TRUE AND GETTIMERALL() <= press_timer_old
+		b1 = TRUE
+		b1_tmp = FALSE
+	ENDIF
+
+	IF b2_press = FALSE THEN b2 = FALSE
+	IF b2_press = TRUE THEN b2_tmp = TRUE
+	IF b2_press = FALSE AND b2_tmp = TRUE
+		b2 = TRUE
+		b2_tmp = FALSE
+	ENDIF
+
+	gui.mouse.b1 = b1
+	gui.mouse.b2 = b2
+	gui.mouse.b1_press = b1_press
+	gui.mouse.b2_press = b2_press
+
+ENDFUNCTION
+
+FUNCTION GUI_drawMouse:
+
+ENDFUNCTION
+
+FUNCTION GUI_loader:
+
+
+
+ENDFUNCTION
+
