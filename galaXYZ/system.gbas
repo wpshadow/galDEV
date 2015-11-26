@@ -6,7 +6,17 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
-TYPE logging
+TYPE options_TYPE
+	resolutionX
+	resolutionY
+	fullscreen
+ENDTYPE
+
+TYPE startup_TYPE
+	info$
+ENDTYPE
+
+TYPE logging_TYPE
 
 ENDTYPE
 
@@ -15,7 +25,10 @@ TYPE console_TYPE
 ENDTYPE
 
 TYPE system_TYPE
+	documentsFolder$
 
+	options AS options_TYPE
+	startup[] AS startup_TYPE
 ENDTYPE
 
 GLOBAL sys AS system_TYPE
@@ -29,8 +42,9 @@ FUNCTION SYS_initial:
 
 	AUTOPAUSE FALSE
 	SYSTEMPOINTER TRUE
-	
+
 	SYS_checkDocumentDir()
+	SYS_checkOptions()
 
 ENDFUNCTION
 
@@ -42,7 +56,7 @@ ENDFUNCTION
 
 FUNCTION SYS_addConsole:
 
-	
+
 
 ENDFUNCTION
 
@@ -50,17 +64,28 @@ FUNCTION SYS_checkDocumentDir:
 LOCAL ok
 
 	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ")
-	
+
+		IF ok = TRUE THEN SYS_startupOutput(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ" + " found")
 		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ")
-	
+
+		SYS_setDocumentDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ")
+
 	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/log")
-	
+
+		IF ok = TRUE THEN SYS_startupOutput(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/log" + " found")
 		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/log")
 
 	ok = DOESDIREXIST(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/save")
-	
+
+		IF ok = TRUE THEN SYS_startupOutput(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/save" + " found")
 		IF ok = FALSE THEN SYS_createDir(PLATFORMINFO$("DOCUMENTS") + "/galaXYZ/save")
 
+
+ENDFUNCTION
+
+FUNCTION SYS_setDocumentDir: info$
+
+	sys.documentsFolder$ = info$
 
 ENDFUNCTION
 
@@ -68,8 +93,92 @@ FUNCTION SYS_createDir: directory$
 LOCAL ok
 
 	ok = CREATEDIR(directory$)
-	
+
 	IF ok = TRUE THEN RETURN
 	IF ok = FALSE THEN END
+
+ENDFUNCTION
+
+FUNCTION SYS_startupOutput: info$
+LOCAL startup AS startup_TYPE, posY
+
+	startup.info$ = info$
+
+	DIMPUSH sys.startup[], startup
+
+	FOREACH s IN sys.startup[]
+
+		PRINT s.info$, 0, posY
+		INC posY, 20
+		SHOWSCREEN
+	NEXT
+
+
+ENDFUNCTION
+
+FUNCTION SYS_checkOptions:
+LOCAL ok
+
+	ok = DOESFILEEXIST(sys.documentsFolder$ + "/options.ini")
+
+	DEBUG sys.documentsFolder$+ "/options.ini"
+
+	IF ok = FALSE
+
+		SYS_startupOutput(sys.documentsFolder$ + "/options.ini" + " not found")
+
+		SYS_generateDefaultOptionsFile()
+		SYS_loadDefaultOptions()
+
+	ENDIF
+
+	IF ok = TRUE
+	
+		SYS_startupOutput(sys.documentsFolder$ + "/options.ini" + " found")
+		
+		SYS_loadOptionsFromFile()
+		
+	ENDIF
+
+ENDFUNCTION
+
+FUNCTION SYS_generateDefaultOptionsFile:
+
+	INIOPEN sys.documentsFolder$ + "/options.ini"
+		INIPUT "options", "resolutionX", "1024"
+		INIPUT "options", "resolutionY", "768"
+		INIPUT "options", "fullscreen", "0"
+	INIOPEN ""
+
+ENDFUNCTION
+
+FUNCTION SYS_loadDefaultOptions:
+
+	sys.options.resolutionX = 1024
+	sys.options.resolutionY = 768
+	sys.options.fullscreen = 0
+
+ENDFUNCTION
+
+FUNCTION SYS_loadOptionsFromFile:
+LOCAL resX$, resY$, full$, failed
+
+	INIOPEN sys.documentsFolder$ + "/options.ini"
+		resX$ = INIGET$("options", "resolutionX")
+		resY$ = INIGET$("options", "resolutionY")
+		full$ = INIGET$("options", "fullscreen")
+		
+		IF resX$ = "NO_DATA" OR resY$ = "NO_DATA" OR full$ = "NO_DATA"
+			SYS_loadDefaultOptions()
+			failed = TRUE
+		ENDIF
+		
+		IF failed = FALSE
+			sys.options.resolutionX = resX$
+			sys.options.resolutionY = resY$
+			sys.options.fullscreen =  full$
+		ENDIF
+			
+	INIOPEN ""	
 
 ENDFUNCTION
