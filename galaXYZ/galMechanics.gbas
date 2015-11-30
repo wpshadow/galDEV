@@ -5,3 +5,21 @@
 
 
 // SETCURRENTDIR("Media") // go to media files
+
+TYPE galaxy_TYPE
+	solarsystem[] AS solarsystem_TYPE
+ENDTYPE
+
+TYPE solarsystem_TYPE
+	planet[] AS planet_TYPE
+ENDTYPE
+
+TYPE planet_TYPE
+	moon[] AS moon_TYPE
+ENDTYPE
+
+TYPE moon_TYPE
+
+ENDTYPE
+
+GLOBAL galaxy AS galaxy_TYPE
