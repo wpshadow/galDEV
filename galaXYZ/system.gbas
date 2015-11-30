@@ -19,7 +19,7 @@ TYPE startup_TYPE
 ENDTYPE
 
 TYPE logging_TYPE
-
+	info$
 ENDTYPE
 
 TYPE console_TYPE
@@ -31,6 +31,7 @@ TYPE system_TYPE
 
 	options AS options_TYPE
 	startup[] AS startup_TYPE
+	logging[] AS logging_TYPE
 ENDTYPE
 
 GLOBAL sys AS system_TYPE
@@ -50,8 +51,12 @@ FUNCTION SYS_initial:
 
 ENDFUNCTION
 
-FUNCTION SYS_addLog:
+FUNCTION SYS_addLog: info$
+LOCAL log AS logging_TYPE
 
+	 log.info$ = (PLATFORMINFO$("TIME") + " | " + info$)
+	 
+	 DIMPUSH sys.logging[], log
 
 
 ENDFUNCTION
@@ -188,7 +193,7 @@ LOCAL failed
 			sys.options.resolutionY = resY$
 			sys.options.fullscreen =  full$
 			sys.options.debugmode = debM$
-			sys.options.debuglevel = debL$			
+			sys.options.debuglevel = debL$
 		ENDIF
 
 	INIOPEN ""
@@ -196,7 +201,22 @@ LOCAL failed
 ENDFUNCTION
 
 FUNCTION SYS_exportLogs:
+LOCAL output$[], time$[]
 
+	IF sys.options.debugmode = 1
+	
+	    SPLITSTR(PLATFORMINFO$("TIME"), output$[], " ")
+	    SPLITSTR(output$[1], time$[], ":")
+	
+		OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
+			
+			FOREACH l IN sys.logging[]
+				WRITELINE 0, l.info$
+			NEXT	
+		
+		CLOSEFILE 0
+		
+	ENDIF
 
 
 ENDFUNCTION

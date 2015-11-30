@@ -12,6 +12,7 @@ main()
 FUNCTION main:
 
 	system()
+	SYS_addLog("test")
 
 	WHILE TRUE
 
