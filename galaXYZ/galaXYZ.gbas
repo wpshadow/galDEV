@@ -23,3 +23,10 @@ FUNCTION main:
 
 ENDFUNCTION
 
+SUB GLB_ON_QUIT:
+
+	SYS_exportLogs()
+
+
+
+ENDFUNCTION

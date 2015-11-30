@@ -10,6 +10,8 @@ TYPE options_TYPE
 	resolutionX
 	resolutionY
 	fullscreen
+	debugmode
+	debuglevel
 ENDTYPE
 
 TYPE startup_TYPE
@@ -133,11 +135,11 @@ LOCAL ok
 	ENDIF
 
 	IF ok = TRUE
-	
+
 		SYS_startupOutput(sys.documentsFolder$ + "/options.ini" + " found")
-		
+
 		SYS_loadOptionsFromFile()
-		
+
 	ENDIF
 
 ENDFUNCTION
@@ -148,6 +150,8 @@ FUNCTION SYS_generateDefaultOptionsFile:
 		INIPUT "options", "resolutionX", "1024"
 		INIPUT "options", "resolutionY", "768"
 		INIPUT "options", "fullscreen", "0"
+		INIPUT "options", "debugmode", "0"
+		INIPUT "options", "debuglevel", "0"
 	INIOPEN ""
 
 ENDFUNCTION
@@ -157,28 +161,42 @@ FUNCTION SYS_loadDefaultOptions:
 	sys.options.resolutionX = 1024
 	sys.options.resolutionY = 768
 	sys.options.fullscreen = 0
+	sys.options.debugmode = 0
+	sys.options.debuglevel = 0
 
 ENDFUNCTION
 
 FUNCTION SYS_loadOptionsFromFile:
-LOCAL resX$, resY$, full$, failed
+LOCAL resX$, resY$, full$, debM$, debL$
+LOCAL failed
 
 	INIOPEN sys.documentsFolder$ + "/options.ini"
 		resX$ = INIGET$("options", "resolutionX")
 		resY$ = INIGET$("options", "resolutionY")
 		full$ = INIGET$("options", "fullscreen")
-		
-		IF resX$ = "NO_DATA" OR resY$ = "NO_DATA" OR full$ = "NO_DATA"
+		debM$ = INIGET$("options", "debugmode")
+		debL$ = INIGET$("options", "debuglevel")
+
+		IF resX$ = "NO_DATA" OR resY$ = "NO_DATA" OR full$ = "NO_DATA" OR debM$ = "NO_DATA" OR debL$ = "NO_DATA"
 			SYS_loadDefaultOptions()
+			KILLFILE sys.documentsFolder$ + "/options.ini"
 			failed = TRUE
 		ENDIF
-		
+
 		IF failed = FALSE
 			sys.options.resolutionX = resX$
 			sys.options.resolutionY = resY$
 			sys.options.fullscreen =  full$
+			sys.options.debugmode = debM$
+			sys.options.debuglevel = debL$			
 		ENDIF
-			
-	INIOPEN ""	
+
+	INIOPEN ""
+
+ENDFUNCTION
+
+FUNCTION SYS_exportLogs:
+
+
 
 ENDFUNCTION
