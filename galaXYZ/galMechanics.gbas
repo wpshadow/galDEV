@@ -8,18 +8,116 @@
 
 TYPE galaxy_TYPE
 	solarsystem[] AS solarsystem_TYPE
+	counterSolarSystem
+
+
 ENDTYPE
 
 TYPE solarsystem_TYPE
+	counterPlanet
 	planet[] AS planet_TYPE
+
+	counterAsteroidBelt
+	asteroid[] AS asteroidBelt_TYPE
+
+
+	name$
+ENDTYPE
+
+TYPE asteroidBelt_TYPE
+	size
+	position
 ENDTYPE
 
 TYPE planet_TYPE
 	moon[] AS moon_TYPE
+	counterMoon
+
+	size
+
 ENDTYPE
 
 TYPE moon_TYPE
-
+	size
 ENDTYPE
 
 GLOBAL galaxy AS galaxy_TYPE
+
+FUNCTION GAL_generateGalaxy: size
+
+LOCAL p AS planet_TYPE
+LOCAL m AS moon_TYPE
+// --------------------------------- //
+// Solarsystem
+// min.    500
+// max. 10.000
+//
+// AsteroidBelt
+// min. 0
+// max. 3
+//
+// Planet
+// min. 1
+// max. 5
+//
+// Moon
+// min. 0
+// max. 5
+// --------------------------------- //
+
+	GAL_generateSolarSystems(size)
+	GAL_generateAsteroidBelt(size)
+
+
+
+
+ENDFUNCTION
+
+FUNCTION GAL_generateSolarSystems: size
+LOCAL s AS solarsystem_TYPE, tmp
+
+	FOR tmp = 0 TO size - 1
+		s.name$ = SYS_FNG$(0, 5 + RND(5))
+
+		IF MOD(tmp, 10) = 0
+			PRINT (tmp + 1) + " " + size, 0, 0
+			SHOWSCREEN
+		ENDIF
+		
+		
+		DIMPUSH galaxy.solarsystem[], s
+	NEXT
+
+ENDFUNCTION
+
+FUNCTION GAL_generateAsteroidBelt: size
+LOCAL a AS asteroidBelt_TYPE, tmp, tmp_a, asteroidLocalCounter
+
+	FOR tmp = 0 TO size - 1
+		galaxy.solarsystem[tmp].counterAsteroidBelt = RND(3)
+		
+		IF MOD(tmp, 10) = 0
+			PRINT (tmp + 1) + " " + size, 0, 0
+			SHOWSCREEN
+		ENDIF
+		
+		IF galaxy.solarsystem[tmp].counterAsteroidBelt > 0
+			
+			asteroidLocalCounter = 0
+			
+			FOR tmp_a = 0 TO galaxy.solarsystem[tmp].counterAsteroidBelt
+				
+				a.size = 1
+				a.position = asteroidLocalCounter
+				
+				DIMPUSH galaxy.solarsystem[tmp].asteroid[], a
+				
+				INC asteroidLocalCounter, 1
+				
+			NEXT
+			
+		ENDIF
+
+	NEXT
+
+ENDFUNCTION

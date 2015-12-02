@@ -14,10 +14,12 @@ FUNCTION main:
 	system()
 	SYS_addLog("test")
 
+	GAL_generateGalaxy(10000)
+
 	WHILE TRUE
 
 		guiUpdate()
-
+		PRINT galaxy.solarsystem[0].name$ , 0, 0
 
 		SHOWSCREEN
 	WEND

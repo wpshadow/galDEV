@@ -220,3 +220,121 @@ LOCAL output$[], time$[]
 
 
 ENDFUNCTION
+
+
+FUNCTION SYS_FNG$: start, lang
+// ==========================
+// Fantasy Name Generator 1.0
+// ==========================
+//
+// &#39;start&#39; --> gibt an, ob der Anfangsbuchstabe ein Mitlaut oder ein Selbstlaut ist
+// 0 = Zufall
+// 1 = Mitlaut
+// 2 = Selbstlaut
+//
+// &#39;lang&#39; --> gibt die Länge des gesamten Wortes an
+LOCAL tmp, name$, status, buchst$, z_mit, z_sel, intern, status_tmp
+
+	FOR tmp = 1 TO lang
+
+
+	// Hier liegen die Standard - RND&#39;s
+	        IF start = 0
+	                status_tmp = RND(100)
+	                IF status_tmp <= 49 THEN status = 1
+	                IF status_tmp > 49 THEN status = 2
+	                start = 3
+	        ENDIF
+
+	        IF start = 1 THEN status = 1
+	        IF start = 2 THEN status = 2
+
+
+
+
+
+
+
+	SELECT status
+
+
+	// Hier werden die Mitlaute zufällig zugeteilt
+	CASE 1
+
+	        WHILE TRUE
+
+	                buchst$ = CHR$(RND(25) + 97)
+
+	                IF ASC(buchst$) <> 97 AND ASC(buchst$) <> 101 AND ASC(buchst$) <> 105 AND ASC(buchst$) <> 111 AND ASC(buchst$) <> 117
+	                        IF tmp = 1 THEN status = 2
+	                        IF tmp > 1
+
+	                                intern =  RND(100)
+	                                IF intern <= 49
+	                                        status = 1
+	                                        z_mit = z_mit + 1
+	                                ENDIF
+	                                IF intern > 49
+	                                        status = 2
+	                                        z_mit = 0
+	                                ENDIF
+	                                // d/n/q/g/y/x/k
+	                                IF z_mit >= 2 OR ASC(buchst$) = 100 OR ASC(buchst$) = 110 OR ASC(buchst$) = 115 OR ASC(buchst$) = 113 OR ASC(buchst$) = 103 OR ASC(buchst$) = 121 OR ASC(buchst$) = 120 OR ASC(buchst$) = 107
+	                                        status = 2
+	                                        z_mit = 0
+	                                ENDIF
+
+	                        ENDIF
+	                        BREAK
+	                ENDIF
+
+	        WEND
+
+
+	// Hier werden die Selbstlaute zufällig zugeteilt
+	CASE 2
+
+	        WHILE TRUE
+
+	                buchst$ = CHR$(RND(25) + 97)
+
+	                IF ASC(buchst$) = 97 OR ASC(buchst$) = 101 OR ASC(buchst$) = 105 OR ASC(buchst$) = 111 OR ASC(buchst$) = 117
+	                        IF tmp = 1 THEN status = 1
+	                        IF tmp > 1
+
+	                                intern =  RND(100)
+	                                IF intern <= 49
+	                                        status = 2
+	                                        z_sel = z_sel + 1
+	                                ENDIF
+	                                IF intern > 49
+	                                        status = 1
+	                                        z_sel = 0
+	                                ENDIF
+	                                IF z_sel >= 2 OR ASC(buchst$) = 117 OR ASC(buchst$) = 101
+	                                        status = 1
+	                                        z_sel = 0
+	                                ENDIF
+
+	                        ENDIF
+	                        BREAK
+	                ENDIF
+
+	        WEND
+
+	ENDSELECT
+
+
+	        IF tmp = 1
+	                name$ = name$ + UCASE$(buchst$)
+	        ELSE
+	                name$ = name$ + LCASE$(buchst$)
+	        ENDIF
+
+
+	NEXT
+
+
+	RETURN name$
+
+ENDFUNCTION
