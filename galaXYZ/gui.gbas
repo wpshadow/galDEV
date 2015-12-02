@@ -21,8 +21,30 @@ TYPE mouse_TYPE
 	b2_press
 ENDTYPE
 
+TYPE button_TYPE
+	text$
+	x
+	y
+	lenght
+	width
+ENDTYPE
+
+TYPE rgb_TYPE
+	r
+	g
+	b
+ENDTYPE
+
+TYPE color_TYPE
+	button AS rgb_TYPE
+	buttonMouseOver AS rgb_TYPE
+	buttonPress AS rgb_TYPE
+ENDTYPE
+
 TYPE gui_TYPE
+	color AS color_TYPE
 	mouse AS mouse_TYPE
+	button[] AS button_TYPE
 ENDTYPE
 
 GLOBAL gui AS gui_TYPE
@@ -30,16 +52,35 @@ GLOBAL gui AS gui_TYPE
 
 // --------------------------------- //
 
+FUNCTION guiInit:
 
+
+
+ENDFUNCTION
 
 FUNCTION guiUpdate:
 
 	GUI_updateMouse()
 
-	GUI_drawMouse()
+	GUI_drawButton()
 
 ENDFUNCTION
 
+FUNCTION GUI_initColor:
+	
+	gui.color.button.r = 0
+	gui.color.button.g = 64
+	gui.color.button.b = 96
+	
+	gui.color.buttonMouseOver.r = 0
+	gui.color.buttonMouseOver.g = 64 + 16
+	gui.color.buttonMouseOver.b = 96 + 32
+
+	gui.color.buttonPress.r = 0
+	gui.color.buttonPress.g = 64 + 32
+	gui.color.buttonPress.b = 96 + 64
+
+ENDFUNCTION
 
 FUNCTION GUI_updateMouse:
 LOCAL x, y, b1, b2, b1_press, b2_press
@@ -80,13 +121,80 @@ STATIC b1_tmp, b2_tmp, press_init, press_timer_old
 
 ENDFUNCTION
 
-FUNCTION GUI_drawMouse:
+FUNCTION GUI_addButton: text$, x, y, lenght=250, width=25
+LOCAL b AS button_TYPE
+
+	b.text$ = text$
+	b.x = x
+	b.y = y
+	b.lenght = lenght
+	b.width = width
+
+	DIMPUSH gui.button[], b
 
 ENDFUNCTION
 
-FUNCTION GUI_loader:
+FUNCTION GUI_drawButton:
+LOCAL active
 
+	IF LEN(gui.button[]) > 0
+		FOREACH b IN gui.button[]
+			IF gui.mouse.x >= b.x AND gui.mouse.x <= b.x + b.lenght AND gui.mouse.y >= b.y AND gui.mouse.y <= b.y + b.width
+				IF gui.mouse.b1_press = 1
+					active = 2
+				ELSE
+					active = 1
+				ENDIF				
+			ELSE
+				active = 0
+			ENDIF
 
+			GUI_drawRect(b.x, b.y, b.lenght, b.width, active)
+
+		NEXT
+	ENDIF
 
 ENDFUNCTION
 
+FUNCTION GUI_drawRect:x, y, l, b, active
+LOCAL r, g, bl
+
+	SELECT active
+	CASE 0
+		r = gui.color.button.r
+		g = gui.color.button.g
+		bl = gui.color.button.b
+	CASE 1
+		r = gui.color.buttonMouseOver.r
+		g = gui.color.buttonMouseOver.g
+		bl = gui.color.buttonMouseOver.b
+	CASE 2
+		r = gui.color.buttonPress.r
+		g = gui.color.buttonPress.g
+		bl = gui.color.buttonPress.b
+	ENDSELECT
+	
+	DRAWRECT x, y, l, b, RGB(r, g, b)
+
+ENDFUNCTION
+
+FUNCTION GUI_drawBorder: x, y, l, b
+
+	
+
+ENDFUNCTION
+
+FUNCTION GUI_centreText: text$
+
+ENDFUNCTION
+
+
+FUNCTION GUI_clearUI:
+
+	IF LEN(gui.button[]) > 0
+		FOREACH b IN gui.button[]
+			DELETE b
+		NEXT
+	ENDIF
+
+ENDFUNCTION

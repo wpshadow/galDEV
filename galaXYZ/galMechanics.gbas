@@ -83,8 +83,8 @@ LOCAL s AS solarsystem_TYPE, tmp
 			PRINT (tmp + 1) + " " + size, 0, 0
 			SHOWSCREEN
 		ENDIF
-		
-		
+
+
 		DIMPUSH galaxy.solarsystem[], s
 	NEXT
 
@@ -95,27 +95,27 @@ LOCAL a AS asteroidBelt_TYPE, tmp, tmp_a, asteroidLocalCounter
 
 	FOR tmp = 0 TO size - 1
 		galaxy.solarsystem[tmp].counterAsteroidBelt = RND(3)
-		
+
 		IF MOD(tmp, 10) = 0
 			PRINT (tmp + 1) + " " + size, 0, 0
 			SHOWSCREEN
 		ENDIF
-		
+
 		IF galaxy.solarsystem[tmp].counterAsteroidBelt > 0
-			
+
 			asteroidLocalCounter = 0
-			
+
 			FOR tmp_a = 0 TO galaxy.solarsystem[tmp].counterAsteroidBelt
-				
+
 				a.size = 1
 				a.position = asteroidLocalCounter
-				
+
 				DIMPUSH galaxy.solarsystem[tmp].asteroid[], a
-				
+
 				INC asteroidLocalCounter, 1
-				
+
 			NEXT
-			
+
 		ENDIF
 
 	NEXT
