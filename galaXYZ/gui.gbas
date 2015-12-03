@@ -41,10 +41,17 @@ TYPE color_TYPE
 	buttonPress AS rgb_TYPE
 ENDTYPE
 
+TYPE font_TYPE
+	id
+	sizeX
+	sizeY
+ENDTYPE
+
 TYPE gui_TYPE
 	color AS color_TYPE
 	mouse AS mouse_TYPE
 	button[] AS button_TYPE
+	font[] AS font_TYPE
 ENDTYPE
 
 GLOBAL gui AS gui_TYPE
@@ -54,7 +61,8 @@ GLOBAL gui AS gui_TYPE
 
 FUNCTION guiInit:
 
-
+	GUI_initColor()
+	GUI_loader()
 
 ENDFUNCTION
 
@@ -66,12 +74,35 @@ FUNCTION guiUpdate:
 
 ENDFUNCTION
 
-FUNCTION GUI_initColor:
+FUNCTION GUI_loader:
+LOCAL f AS font_TYPE, count, tmp, tmp$, file$
+
+	INIOPEN "media/gfx.ini"
 	
+		count = INIGET$("font", "counter")
+	
+		FOR tmp = 0 TO count - 1
+			tmp$ = tmp
+			file$ = "font_" + tmp$
+			f.id = GENFONT()
+			DEBUG "\n" + f.id
+			LOADFONT INIGET$("font$", file$), f.id
+			SETFONT f.id
+			GETFONTSIZE f.sizeX, f.sizeY
+			
+			DIMPUSH gui.font[], f
+		NEXT
+	
+	INIOPEN ""
+
+ENDFUNCTION
+
+FUNCTION GUI_initColor:
+
 	gui.color.button.r = 0
 	gui.color.button.g = 64
 	gui.color.button.b = 96
-	
+
 	gui.color.buttonMouseOver.r = 0
 	gui.color.buttonMouseOver.g = 64 + 16
 	gui.color.buttonMouseOver.b = 96 + 32
@@ -144,12 +175,16 @@ LOCAL active
 					active = 2
 				ELSE
 					active = 1
-				ENDIF				
+				ENDIF
 			ELSE
 				active = 0
 			ENDIF
 
 			GUI_drawRect(b.x, b.y, b.lenght, b.width, active)
+			IF active > 0
+				GUI_drawBorder(b.x, b.y, b.lenght, b.width, active)
+			ENDIF
+			GUI_centreText(b.text$, b.x, b.y, b.lenght, b.width)
 
 		NEXT
 	ENDIF
@@ -173,18 +208,31 @@ LOCAL r, g, bl
 		g = gui.color.buttonPress.g
 		bl = gui.color.buttonPress.b
 	ENDSELECT
-	
-	DRAWRECT x, y, l, b, RGB(r, g, b)
+
+	DRAWRECT x, y, l, b, RGB(r, g, bl)
 
 ENDFUNCTION
 
-FUNCTION GUI_drawBorder: x, y, l, b
-
+FUNCTION GUI_drawBorder: x, y, l, b, active
 	
+	SELECT active
+	CASE 1	
+		DRAWLINE x, y, x + l - 1, y, RGB(192, 192, 192)
+		DRAWLINE x, y, x, y + b - 1, RGB(192, 192, 192)
+		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(128, 128, 128)
+		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(128, 128, 128)
+	CASE 2
+		DRAWLINE x, y, x + l - 1, y, RGB(255, 255, 255)
+		DRAWLINE x, y, x, y + b - 1, RGB(255, 255, 255)
+		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(192, 192, 192)
+		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(192, 192, 192)	
+	ENDSELECT	
 
 ENDFUNCTION
 
-FUNCTION GUI_centreText: text$
+FUNCTION GUI_centreText: text$, x, y, l, b
+
+	PRINT text$, x, y
 
 ENDFUNCTION
 
