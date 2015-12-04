@@ -209,7 +209,7 @@ LOCAL output$[], time$[], ok
 	    SPLITSTR(output$[1], time$[], ":")
 
 		ok = DOESFILEEXIST(sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt")
-		
+
 		IF ok = TRUE
 			OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
 		ELSE

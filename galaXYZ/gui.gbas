@@ -78,21 +78,20 @@ FUNCTION GUI_loader:
 LOCAL f AS font_TYPE, count, tmp, tmp$, file$
 
 	INIOPEN "media/gfx.ini"
-	
+
 		count = INIGET$("font", "counter")
-	
+
 		FOR tmp = 0 TO count - 1
 			tmp$ = tmp
 			file$ = "font_" + tmp$
 			f.id = GENFONT()
-			DEBUG "\n" + f.id
-			LOADFONT INIGET$("font$", file$), f.id
+			LOADFONT INIGET$("font", file$), f.id
 			SETFONT f.id
 			GETFONTSIZE f.sizeX, f.sizeY
-			
+
 			DIMPUSH gui.font[], f
 		NEXT
-	
+
 	INIOPEN ""
 
 ENDFUNCTION
@@ -170,7 +169,7 @@ LOCAL active
 
 	IF LEN(gui.button[]) > 0
 		FOREACH b IN gui.button[]
-			IF gui.mouse.x >= b.x AND gui.mouse.x <= b.x + b.lenght AND gui.mouse.y >= b.y AND gui.mouse.y <= b.y + b.width
+			IF gui.mouse.x >= b.x AND gui.mouse.x < b.x + b.lenght AND gui.mouse.y >= b.y AND gui.mouse.y < b.y + b.width
 				IF gui.mouse.b1_press = 1
 					active = 2
 				ELSE
@@ -184,7 +183,7 @@ LOCAL active
 			IF active > 0
 				GUI_drawBorder(b.x, b.y, b.lenght, b.width, active)
 			ENDIF
-			GUI_centreText(b.text$, b.x, b.y, b.lenght, b.width)
+			GUI_centreText(b.text$, 0, b.x, b.y, b.lenght, b.width)
 
 		NEXT
 	ENDIF
@@ -214,9 +213,9 @@ LOCAL r, g, bl
 ENDFUNCTION
 
 FUNCTION GUI_drawBorder: x, y, l, b, active
-	
+
 	SELECT active
-	CASE 1	
+	CASE 1
 		DRAWLINE x, y, x + l - 1, y, RGB(192, 192, 192)
 		DRAWLINE x, y, x, y + b - 1, RGB(192, 192, 192)
 		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(128, 128, 128)
@@ -225,14 +224,22 @@ FUNCTION GUI_drawBorder: x, y, l, b, active
 		DRAWLINE x, y, x + l - 1, y, RGB(255, 255, 255)
 		DRAWLINE x, y, x, y + b - 1, RGB(255, 255, 255)
 		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(192, 192, 192)
-		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(192, 192, 192)	
-	ENDSELECT	
+		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(192, 192, 192)
+	ENDSELECT
 
 ENDFUNCTION
 
-FUNCTION GUI_centreText: text$, x, y, l, b
+FUNCTION GUI_centreText: text$, fontID, x, y, l, b
+LOCAL anzahlBuchstaben, sizeX, sizeY, positionX, positionY
 
-	PRINT text$, x, y
+	anzahlBuchstaben = LEN(text$)
+	sizeX = gui.font[0].sizeX
+	sizeY = gui.font[0].sizeY
+	
+	positionX = x + ((l - (anzahlBuchstaben * sizeX)) / 2) 
+	positionY = y + ((b - sizeY) / 2) - 1
+	
+	PRINT text$, positionX, positionY
 
 ENDFUNCTION
 
