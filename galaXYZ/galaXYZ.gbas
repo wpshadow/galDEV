@@ -14,12 +14,16 @@ FUNCTION main:
 	system()
 	SYS_addLog("test")
 
-	GAL_generateGalaxy(10000)
+	guiInit()
+
+	GAL_generateGalaxy(100)
+
+	WIN_setWindow(0)
 
 	WHILE TRUE
 
-		guiUpdate()
-		PRINT galaxy.solarsystem[0].name$ , 0, 0
+		drawWindows()
+
 
 		SHOWSCREEN
 	WEND
@@ -27,8 +31,29 @@ FUNCTION main:
 ENDFUNCTION
 
 SUB GLB_ON_QUIT:
+LOCAL output$[], time$[], ok
+	//SYS_exportLogs()
 
-	SYS_exportLogs()
+	IF sys.options.debugmode = 1
+
+	    SPLITSTR(PLATFORMINFO$("TIME"), output$[], " ")
+	    SPLITSTR(output$[1], time$[], ":")
+
+		ok = DOESFILEEXIST(sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt")
+
+		IF ok = TRUE
+			OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
+		ELSE
+			OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", 0)
+		ENDIF
+
+			FOREACH l IN sys.logging[]
+				WRITELINE 0, l.info$
+			NEXT
+
+		CLOSEFILE 0
+
+	ENDIF
 
 
 

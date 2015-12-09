@@ -21,8 +21,37 @@ TYPE mouse_TYPE
 	b2_press
 ENDTYPE
 
+TYPE button_TYPE
+	text$
+	x
+	y
+	lenght
+	width
+ENDTYPE
+
+TYPE rgb_TYPE
+	r
+	g
+	b
+ENDTYPE
+
+TYPE color_TYPE
+	button AS rgb_TYPE
+	buttonMouseOver AS rgb_TYPE
+	buttonPress AS rgb_TYPE
+ENDTYPE
+
+TYPE font_TYPE
+	id
+	sizeX
+	sizeY
+ENDTYPE
+
 TYPE gui_TYPE
+	color AS color_TYPE
 	mouse AS mouse_TYPE
+	button[] AS button_TYPE
+	font[] AS font_TYPE
 ENDTYPE
 
 GLOBAL gui AS gui_TYPE
@@ -30,16 +59,58 @@ GLOBAL gui AS gui_TYPE
 
 // --------------------------------- //
 
+FUNCTION guiInit:
 
+	GUI_initColor()
+	GUI_loader()
+
+ENDFUNCTION
 
 FUNCTION guiUpdate:
 
 	GUI_updateMouse()
 
-	GUI_drawMouse()
+	GUI_drawButton()
 
 ENDFUNCTION
 
+FUNCTION GUI_loader:
+LOCAL f AS font_TYPE, count, tmp, tmp$, file$
+
+	INIOPEN "media/gfx.ini"
+
+		count = INIGET$("font", "counter")
+
+		FOR tmp = 0 TO count - 1
+			tmp$ = tmp
+			file$ = "font_" + tmp$
+			f.id = GENFONT()
+			LOADFONT INIGET$("font", file$), f.id
+			SETFONT f.id
+			GETFONTSIZE f.sizeX, f.sizeY
+
+			DIMPUSH gui.font[], f
+		NEXT
+
+	INIOPEN ""
+
+ENDFUNCTION
+
+FUNCTION GUI_initColor:
+
+	gui.color.button.r = 0
+	gui.color.button.g = 64
+	gui.color.button.b = 96
+
+	gui.color.buttonMouseOver.r = 0
+	gui.color.buttonMouseOver.g = 64 + 16
+	gui.color.buttonMouseOver.b = 96 + 32
+
+	gui.color.buttonPress.r = 0
+	gui.color.buttonPress.g = 64 + 32
+	gui.color.buttonPress.b = 96 + 64
+
+ENDFUNCTION
 
 FUNCTION GUI_updateMouse:
 LOCAL x, y, b1, b2, b1_press, b2_press
@@ -80,13 +151,105 @@ STATIC b1_tmp, b2_tmp, press_init, press_timer_old
 
 ENDFUNCTION
 
-FUNCTION GUI_drawMouse:
+FUNCTION GUI_addButton: text$, x, y, lenght=250, width=25
+LOCAL b AS button_TYPE
+
+	b.text$ = text$
+	b.x = x
+	b.y = y
+	b.lenght = lenght
+	b.width = width
+
+	DIMPUSH gui.button[], b
 
 ENDFUNCTION
 
-FUNCTION GUI_loader:
+FUNCTION GUI_drawButton:
+LOCAL active
 
+	IF LEN(gui.button[]) > 0
+		FOREACH b IN gui.button[]
+			IF gui.mouse.x >= b.x AND gui.mouse.x < b.x + b.lenght AND gui.mouse.y >= b.y AND gui.mouse.y < b.y + b.width
+				IF gui.mouse.b1_press = 1
+					active = 2
+				ELSE
+					active = 1
+				ENDIF
+			ELSE
+				active = 0
+			ENDIF
 
+			GUI_drawRect(b.x, b.y, b.lenght, b.width, active)
+			IF active > 0
+				GUI_drawBorder(b.x, b.y, b.lenght, b.width, active)
+			ENDIF
+			GUI_centreText(b.text$, 0, b.x, b.y, b.lenght, b.width)
+
+		NEXT
+	ENDIF
 
 ENDFUNCTION
 
+FUNCTION GUI_drawRect:x, y, l, b, active
+LOCAL r, g, bl
+
+	SELECT active
+	CASE 0
+		r = gui.color.button.r
+		g = gui.color.button.g
+		bl = gui.color.button.b
+	CASE 1
+		r = gui.color.buttonMouseOver.r
+		g = gui.color.buttonMouseOver.g
+		bl = gui.color.buttonMouseOver.b
+	CASE 2
+		r = gui.color.buttonPress.r
+		g = gui.color.buttonPress.g
+		bl = gui.color.buttonPress.b
+	ENDSELECT
+
+	DRAWRECT x, y, l, b, RGB(r, g, bl)
+
+ENDFUNCTION
+
+FUNCTION GUI_drawBorder: x, y, l, b, active
+
+	SELECT active
+	CASE 1
+		DRAWLINE x, y, x + l - 1, y, RGB(192, 192, 192)
+		DRAWLINE x, y, x, y + b - 1, RGB(192, 192, 192)
+		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(128, 128, 128)
+		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(128, 128, 128)
+	CASE 2
+		DRAWLINE x, y, x + l - 1, y, RGB(255, 255, 255)
+		DRAWLINE x, y, x, y + b - 1, RGB(255, 255, 255)
+		DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(192, 192, 192)
+		DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(192, 192, 192)
+	ENDSELECT
+
+ENDFUNCTION
+
+FUNCTION GUI_centreText: text$, fontID, x, y, l, b
+LOCAL anzahlBuchstaben, sizeX, sizeY, positionX, positionY
+
+	anzahlBuchstaben = LEN(text$)
+	sizeX = gui.font[0].sizeX
+	sizeY = gui.font[0].sizeY
+	
+	positionX = x + ((l - (anzahlBuchstaben * sizeX)) / 2) 
+	positionY = y + ((b - sizeY) / 2) - 1
+	
+	PRINT text$, positionX, positionY
+
+ENDFUNCTION
+
+
+FUNCTION GUI_clearUI:
+
+	IF LEN(gui.button[]) > 0
+		FOREACH b IN gui.button[]
+			DELETE b
+		NEXT
+	ENDIF
+
+ENDFUNCTION

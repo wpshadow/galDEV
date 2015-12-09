@@ -201,14 +201,20 @@ LOCAL failed
 ENDFUNCTION
 
 FUNCTION SYS_exportLogs:
-LOCAL output$[], time$[]
+LOCAL output$[], time$[], ok
 
 	IF sys.options.debugmode = 1
 
 	    SPLITSTR(PLATFORMINFO$("TIME"), output$[], " ")
 	    SPLITSTR(output$[1], time$[], ":")
 
-		OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
+		ok = DOESFILEEXIST(sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt")
+
+		IF ok = TRUE
+			OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
+		ELSE
+			OPENFILE(0, sys.documentsFolder$ + "/log/" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", 0)
+		ENDIF
 
 			FOREACH l IN sys.logging[]
 				WRITELINE 0, l.info$
