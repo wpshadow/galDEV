@@ -7,6 +7,7 @@
 // SETCURRENTDIR("Media") // go to media files
 
 TYPE windows_type
+	id
 	loaded
 ENDTYPE
 
@@ -14,7 +15,9 @@ GLOBAL windows AS windows_type
 
 FUNCTION drawWindows:
 
-
+	IF windows.loaded = FALSE
+		WIN_setWindow(windows.id)
+	ENDIF
 
 	guiUpdate()
 
@@ -22,21 +25,19 @@ ENDFUNCTION
 
 FUNCTION WIN_setWindow: id
 
-	IF windows.loaded = FALSE
+	SELECT id
+	CASE 0
+		GUI_addButton("Test", 100, 100)
+		GUI_addButton("Test", 100, 125)
+		GUI_addButton("Test", 100, 150)
+		GUI_addButton("Test", 100, 175)
+		GUI_addButton("Test", 100, 200)
+		GUI_addLabel("Test 2", 100, 225)
 
-		SELECT id
-		CASE 0
+		windows.loaded = TRUE
 
-			GUI_addButton("Test", 100, 100)
-			GUI_addButton("Test", 100, 125)
-			GUI_addButton("Test", 100, 150)
-			GUI_addButton("Test", 100, 175)
-			GUI_addButton("Test", 100, 200)
+	ENDSELECT
 
-			windows.loaded = TRUE
 
-		ENDSELECT
-
-	ENDIF
 
 ENDFUNCTION
