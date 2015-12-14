@@ -24,15 +24,18 @@ FUNCTION drawWindows:
 ENDFUNCTION
 
 FUNCTION WIN_setWindow: id
+LOCAL tmp, tmp$
 
 	SELECT id
 	CASE 0
-		GUI_addButton("Test", 100, 100)
-		GUI_addButton("Test", 100, 125)
-		GUI_addButton("Test", 100, 150)
-		GUI_addButton("Test", 100, 175)
-		GUI_addButton("Test", 100, 200)
-		GUI_addLabel("Test 2", 100, 225)
+		GUI_addLabel("Speicherstand wählen", SYS_getScreenCenterHorizontal() - 200, 0, 400)
+
+		FOR tmp = 0 TO 9
+
+		GUI_addButton("Test", SYS_getScreenCenterHorizontal() - 125, 100 + (tmp * 50))
+
+		NEXT
+
 
 		windows.loaded = TRUE
 

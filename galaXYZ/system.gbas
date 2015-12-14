@@ -344,3 +344,12 @@ LOCAL tmp, name$, status, buchst$, z_mit, z_sel, intern, status_tmp
 	RETURN name$
 
 ENDFUNCTION
+
+FUNCTION SYS_getScreenCenterHorizontal:
+LOCAL position
+	
+	position = sys.options.resolutionX / 2
+	
+	RETURN position
+
+ENDFUNCTION
