@@ -21,12 +21,21 @@ TYPE mouse_TYPE
 	b2_press
 ENDTYPE
 
-TYPE button_TYPE
-	text$
+TYPE position_TYPE
 	x
 	y
 	lenght
 	width
+ENDTYPE
+
+TYPE button_TYPE
+	text$
+	position AS position_TYPE
+ENDTYPE
+
+TYPE label_TYPE
+	text$
+	position AS position_TYPE
 ENDTYPE
 
 TYPE rgb_TYPE
@@ -39,6 +48,8 @@ TYPE color_TYPE
 	button AS rgb_TYPE
 	buttonMouseOver AS rgb_TYPE
 	buttonPress AS rgb_TYPE
+	backgroundUp AS rgb_TYPE
+	backgroundDown AS rgb_TYPE
 ENDTYPE
 
 TYPE font_TYPE
@@ -51,6 +62,8 @@ TYPE gui_TYPE
 	color AS color_TYPE
 	mouse AS mouse_TYPE
 	button[] AS button_TYPE
+	label[] AS label_TYPE
+
 	font[] AS font_TYPE
 ENDTYPE
 
@@ -68,9 +81,12 @@ ENDFUNCTION
 
 FUNCTION guiUpdate:
 
+	GUI_drawBackground()
+
 	GUI_updateMouse()
 
 	GUI_drawButton()
+	GUI_drawLabel()
 
 ENDFUNCTION
 
@@ -109,6 +125,14 @@ FUNCTION GUI_initColor:
 	gui.color.buttonPress.r = 0
 	gui.color.buttonPress.g = 64 + 32
 	gui.color.buttonPress.b = 96 + 64
+
+	gui.color.backgroundUp.r = 0
+	gui.color.backgroundUp.g = 24
+	gui.color.backgroundUp.b = 48
+
+	gui.color.backgroundDown.r = 0
+	gui.color.backgroundDown.g = 0
+	gui.color.backgroundDown.b = 0
 
 ENDFUNCTION
 
@@ -155,10 +179,10 @@ FUNCTION GUI_addButton: text$, x, y, lenght=250, width=25
 LOCAL b AS button_TYPE
 
 	b.text$ = text$
-	b.x = x
-	b.y = y
-	b.lenght = lenght
-	b.width = width
+	b.position.x = x
+	b.position.y = y
+	b.position.lenght = lenght
+	b.position.width = width
 
 	DIMPUSH gui.button[], b
 
@@ -169,7 +193,7 @@ LOCAL active
 
 	IF LEN(gui.button[]) > 0
 		FOREACH b IN gui.button[]
-			IF gui.mouse.x >= b.x AND gui.mouse.x < b.x + b.lenght AND gui.mouse.y >= b.y AND gui.mouse.y < b.y + b.width
+			IF gui.mouse.x >= b.position.x AND gui.mouse.x < b.position.x + b.position.lenght AND gui.mouse.y >= b.position.y AND gui.mouse.y < b.position.y + b.position.width
 				IF gui.mouse.b1_press = 1
 					active = 2
 				ELSE
@@ -179,11 +203,11 @@ LOCAL active
 				active = 0
 			ENDIF
 
-			GUI_drawRect(b.x, b.y, b.lenght, b.width, active)
+			GUI_drawRect(b.position.x, b.position.y, b.position.lenght, b.position.width, active)
 			IF active > 0
-				GUI_drawBorder(b.x, b.y, b.lenght, b.width, active)
+				GUI_drawBorder(b.position.x, b.position.y, b.position.lenght, b.position.width, active)
 			ENDIF
-			GUI_centreText(b.text$, 0, b.x, b.y, b.lenght, b.width)
+			GUI_centreText(b.text$, 0, b.position.x, b.position.y, b.position.lenght, b.position.width)
 
 		NEXT
 	ENDIF
@@ -235,14 +259,38 @@ LOCAL anzahlBuchstaben, sizeX, sizeY, positionX, positionY
 	anzahlBuchstaben = LEN(text$)
 	sizeX = gui.font[0].sizeX
 	sizeY = gui.font[0].sizeY
-	
-	positionX = x + ((l - (anzahlBuchstaben * sizeX)) / 2) 
+
+	positionX = x + ((l - (anzahlBuchstaben * sizeX)) / 2)
 	positionY = y + ((b - sizeY) / 2) - 1
-	
+
 	PRINT text$, positionX, positionY
 
 ENDFUNCTION
 
+FUNCTION GUI_addLabel: text$, x, y, lenght=250, width=25
+LOCAL l AS label_TYPE
+
+	l.text$ = text$
+	l.position.x = x
+	l.position.y = y
+	l.position.lenght = lenght
+	l.position.width = width
+
+	DIMPUSH gui.label[], l
+
+ENDFUNCTION
+
+FUNCTION GUI_drawLabel:
+
+	IF LEN(gui.label[]) > 0
+		FOREACH l IN gui.label[]	
+			GUI_drawRect(l.position.x, l.position.y, l.position.lenght, l.position.width, 0)
+			GUI_drawBorder(l.position.x, l.position.y, l.position.lenght, l.position.width, 1)
+			GUI_centreText(l.text$, 0, l.position.x, l.position.y, l.position.lenght, l.position.width)
+		NEXT
+	ENDIF
+
+ENDFUNCTION
 
 FUNCTION GUI_clearUI:
 
@@ -251,5 +299,22 @@ FUNCTION GUI_clearUI:
 			DELETE b
 		NEXT
 	ENDIF
+
+ENDFUNCTION
+
+FUNCTION GUI_setBackground:
+
+
+
+ENDFUNCTION
+
+FUNCTION GUI_drawBackground:
+
+	STARTPOLY
+		POLYVECTOR 0, 0, 0, 0, RGB(	gui.color.backgroundUp.r, gui.color.backgroundUp.g, gui.color.backgroundUp.b)
+		POLYVECTOR 0, sys.options.resolutionY, 0, 0, RGB(	gui.color.backgroundDown.r, gui.color.backgroundDown.g, gui.color.backgroundDown.b)
+		POLYVECTOR sys.options.resolutionX, sys.options.resolutionY, 0, 0, RGB(	gui.color.backgroundDown.r, gui.color.backgroundDown.g, gui.color.backgroundDown.b)
+		POLYVECTOR sys.options.resolutionX, 0, 0, 0, RGB(	gui.color.backgroundUp.r, gui.color.backgroundUp.g, gui.color.backgroundUp.b)
+	ENDPOLY
 
 ENDFUNCTION
