@@ -30,6 +30,7 @@ ENDTYPE
 
 TYPE button_TYPE
 	text$
+	target	
 	position AS position_TYPE
 ENDTYPE
 
@@ -283,7 +284,7 @@ ENDFUNCTION
 FUNCTION GUI_drawLabel:
 
 	IF LEN(gui.label[]) > 0
-		FOREACH l IN gui.label[]	
+		FOREACH l IN gui.label[]
 			GUI_drawRect(l.position.x, l.position.y, l.position.lenght, l.position.width, 0)
 			GUI_drawBorder(l.position.x, l.position.y, l.position.lenght, l.position.width, 1)
 			GUI_centreText(l.text$, 0, l.position.x, l.position.y, l.position.lenght, l.position.width)

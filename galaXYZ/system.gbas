@@ -128,7 +128,7 @@ LOCAL ok
 
 	ok = DOESFILEEXIST(sys.documentsFolder$ + "/options.ini")
 
-	DEBUG sys.documentsFolder$+ "/options.ini"
+	//DEBUG sys.documentsFolder$+ "/options.ini"
 
 	IF ok = FALSE
 
@@ -347,9 +347,9 @@ ENDFUNCTION
 
 FUNCTION SYS_getScreenCenterHorizontal:
 LOCAL position
-	
+
 	position = sys.options.resolutionX / 2
-	
+
 	RETURN position
 
 ENDFUNCTION
