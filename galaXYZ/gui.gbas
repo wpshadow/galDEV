@@ -30,7 +30,7 @@ ENDTYPE
 
 TYPE button_TYPE
 	text$
-	target	
+	information$
 	position AS position_TYPE
 ENDTYPE
 
@@ -80,14 +80,24 @@ FUNCTION guiInit:
 
 ENDFUNCTION
 
-FUNCTION guiUpdate:
+FUNCTION guiUpdate$:
+LOCAL hit$
 
 	GUI_drawBackground()
 
 	GUI_updateMouse()
 
-	GUI_drawButton()
+	hit$ = GUI_drawButton$()
+	
+	//DEBUG hit$
+	
 	GUI_drawLabel()
+	
+	IF hit$ <> "NULL"
+		RETURN hit$
+	ELSE
+		RETURN "NULL"
+	ENDIF
 
 ENDFUNCTION
 
@@ -176,33 +186,42 @@ STATIC b1_tmp, b2_tmp, press_init, press_timer_old
 
 ENDFUNCTION
 
-FUNCTION GUI_addButton: text$, x, y, lenght=250, width=25
+FUNCTION GUI_addButton: text$, information$, x, y, lenght=250, width=25
 LOCAL b AS button_TYPE
 
 	b.text$ = text$
+	b.information$ = information$
 	b.position.x = x
 	b.position.y = y
 	b.position.lenght = lenght
 	b.position.width = width
-
+	
 	DIMPUSH gui.button[], b
 
 ENDFUNCTION
 
-FUNCTION GUI_drawButton:
-LOCAL active
+FUNCTION GUI_drawButton$:
+LOCAL active, returnInfo$
 
 	IF LEN(gui.button[]) > 0
 		FOREACH b IN gui.button[]
+
 			IF gui.mouse.x >= b.position.x AND gui.mouse.x < b.position.x + b.position.lenght AND gui.mouse.y >= b.position.y AND gui.mouse.y < b.position.y + b.position.width
 				IF gui.mouse.b1_press = 1
 					active = 2
 				ELSE
 					active = 1
 				ENDIF
+				
+				IF gui.mouse.b1 = 1
+					returnInfo$ = b.information$
+				ENDIF
+				
 			ELSE
 				active = 0
 			ENDIF
+			
+			
 
 			GUI_drawRect(b.position.x, b.position.y, b.position.lenght, b.position.width, active)
 			IF active > 0
@@ -211,6 +230,14 @@ LOCAL active
 			GUI_centreText(b.text$, 0, b.position.x, b.position.y, b.position.lenght, b.position.width)
 
 		NEXT
+	ENDIF
+	
+	//DEBUG returnInfo$ + "\n"	
+		
+	IF LEN(returnInfo$) > 0
+		RETURN returnInfo$
+	ELSE
+		RETURN "NULL"
 	ENDIF
 
 ENDFUNCTION

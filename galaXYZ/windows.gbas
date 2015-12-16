@@ -14,12 +14,24 @@ ENDTYPE
 GLOBAL windows AS windows_type
 
 FUNCTION drawWindows:
+LOCAL hit$
 
 	IF windows.loaded = FALSE
 		WIN_setWindow(windows.id)
 	ENDIF
 
-	guiUpdate()
+	 //DEBUG guiUpdate$() + "\n"
+	 hit$ = guiUpdate$()
+
+	IF hit$ <> "NULL"
+		WIN_evaluateUserInput(hit$)
+	ENDIF
+
+ENDFUNCTION
+
+FUNCTION WIN_evaluateUserInput: input$
+
+	DEBUG input$ + "\n"
 
 ENDFUNCTION
 
@@ -30,7 +42,7 @@ FUNCTION WIN_setWindow: id
 	CASE 0
 		WIN_setWindow_0()
 	CASE 1
-	
+
 	CASE 2
 
 	ENDSELECT
@@ -49,28 +61,27 @@ LOCAL tmp, tmp$, text$, savefolder$, ok_folder, ok_file
 		tmp$ = tmp
 		text$ = "neu"
 		savefolder$ = "save_" + tmp$
-		
+
 		//DEBUG sys.documentsFolder$ + "/save/" + savefolder$
-		
+
 		ok_folder = DOESDIREXIST(sys.documentsFolder$ + "/save/" + savefolder$)
-		
+
 		IF ok_folder = TRUE
 			ok_file = DOESFILEEXIST(sys.documentsFolder$ + "/save/" + savefolder$ + "/config.ini")
-			
+
 			IF ok_file = FALSE
 				KILLFILE sys.documentsFolder$ + "/save/" + savefolder$
 			ENDIF
 			IF ok_file = TRUE
 				INIOPEN sys.documentsFolder$ + "/save/" + savefolder$ + "/config.ini"
 					text$ = INIGET$("default", "playername")
-					DEBUG text$
 				INIOPEN ""
 			ENDIF
-			
-			
+
+
 		ENDIF
 
-		GUI_addButton(text$, SYS_getScreenCenterHorizontal() - 125, 100 + (tmp * 50))
+		GUI_addButton(text$, "blub", SYS_getScreenCenterHorizontal() - 125, 100 + (tmp * 50))
 
 	NEXT
 
