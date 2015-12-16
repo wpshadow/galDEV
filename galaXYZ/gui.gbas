@@ -327,6 +327,12 @@ FUNCTION GUI_clearUI:
 			DELETE b
 		NEXT
 	ENDIF
+	
+	IF LEN(gui.label[]) > 0
+		FOREACH l IN gui.label[]
+			DELETE l
+		NEXT
+	ENDIF
 
 ENDFUNCTION
 

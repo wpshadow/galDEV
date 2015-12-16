@@ -30,13 +30,43 @@ LOCAL hit$
 ENDFUNCTION
 
 FUNCTION WIN_evaluateUserInput: input$
+LOCAL commandLines$[], commandLines, tmp, command$[]
 
-	DEBUG input$ + "\n"
+	commandLines = SPLITSTR(input$, commandLines$[], "|")
+	
+	FOR tmp = 0 TO commandLines - 1
+		SPLITSTR(commandLines$[tmp], command$[], " ")
+		
+		SELECT command$[0]
+		CASE "set"
+			DEBUG "set "
+			
+			SELECT command$[1]
+			CASE "window"
+				DEBUG "windows "
+				DEBUG command$[2]
+				windows.id = command$[2]
+				windows.loaded = FALSE
+			ENDSELECT		
+		ENDSELECT
+		
+		
+		
+	NEXT
+	
+	
+	//DEBUG commandLines$[0]
+	
+	
+	
+	
+	//DEBUG input$ + "\n"
 
 ENDFUNCTION
 
 FUNCTION WIN_setWindow: id
 
+	GUI_clearUI()
 
 	SELECT id
 	CASE 0
@@ -81,7 +111,7 @@ LOCAL tmp, tmp$, text$, savefolder$, ok_folder, ok_file
 
 		ENDIF
 
-		GUI_addButton(text$, "blub", SYS_getScreenCenterHorizontal() - 125, 100 + (tmp * 50))
+		GUI_addButton(text$, "set window 1|set user " + tmp$, SYS_getScreenCenterHorizontal() - 125, 100 + (tmp * 50))
 
 	NEXT
 
