@@ -33,33 +33,33 @@ FUNCTION WIN_evaluateUserInput: input$
 LOCAL commandLines$[], commandLines, tmp, command$[]
 
 	commandLines = SPLITSTR(input$, commandLines$[], "|")
-	
+
 	FOR tmp = 0 TO commandLines - 1
 		SPLITSTR(commandLines$[tmp], command$[], " ")
-		
+
 		SELECT command$[0]
 		CASE "set"
 			DEBUG "set "
-			
+
 			SELECT command$[1]
 			CASE "window"
 				DEBUG "windows "
 				DEBUG command$[2]
 				windows.id = command$[2]
 				windows.loaded = FALSE
-			ENDSELECT		
+			ENDSELECT
 		ENDSELECT
-		
-		
-		
+
+
+
 	NEXT
-	
-	
+
+
 	//DEBUG commandLines$[0]
-	
-	
-	
-	
+
+
+
+
 	//DEBUG input$ + "\n"
 
 ENDFUNCTION
@@ -72,7 +72,7 @@ FUNCTION WIN_setWindow: id
 	CASE 0
 		WIN_setWindow_0()
 	CASE 1
-
+		WIN_setWindow_1()
 	CASE 2
 
 	ENDSELECT
@@ -115,5 +115,16 @@ LOCAL tmp, tmp$, text$, savefolder$, ok_folder, ok_file
 
 	NEXT
 
+
+ENDFUNCTION
+
+FUNCTION WIN_setWindow_1:
+LOCAL tmp
+
+	GUI_addLabel("Namen wählen", SYS_getScreenCenterHorizontal() - 200, 0, 400)
+	
+	FOR tmp = 0 TO 7
+		GUI_addButton("A", "", SYS_getScreenCenterHorizontal() - 160 + (tmp * 40), 100, 25)
+	NEXT
 
 ENDFUNCTION

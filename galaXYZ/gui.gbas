@@ -88,11 +88,11 @@ LOCAL hit$
 	GUI_updateMouse()
 
 	hit$ = GUI_drawButton$()
-	
+
 	//DEBUG hit$
-	
+
 	GUI_drawLabel()
-	
+
 	IF hit$ <> "NULL"
 		RETURN hit$
 	ELSE
@@ -195,7 +195,7 @@ LOCAL b AS button_TYPE
 	b.position.y = y
 	b.position.lenght = lenght
 	b.position.width = width
-	
+
 	DIMPUSH gui.button[], b
 
 ENDFUNCTION
@@ -212,16 +212,16 @@ LOCAL active, returnInfo$
 				ELSE
 					active = 1
 				ENDIF
-				
+
 				IF gui.mouse.b1 = 1
 					returnInfo$ = b.information$
 				ENDIF
-				
+
 			ELSE
 				active = 0
 			ENDIF
-			
-			
+
+
 
 			GUI_drawRect(b.position.x, b.position.y, b.position.lenght, b.position.width, active)
 			IF active > 0
@@ -231,9 +231,9 @@ LOCAL active, returnInfo$
 
 		NEXT
 	ENDIF
-	
-	//DEBUG returnInfo$ + "\n"	
-		
+
+	//DEBUG returnInfo$ + "\n"
+
 	IF LEN(returnInfo$) > 0
 		RETURN returnInfo$
 	ELSE
@@ -327,7 +327,7 @@ FUNCTION GUI_clearUI:
 			DELETE b
 		NEXT
 	ENDIF
-	
+
 	IF LEN(gui.label[]) > 0
 		FOREACH l IN gui.label[]
 			DELETE l
